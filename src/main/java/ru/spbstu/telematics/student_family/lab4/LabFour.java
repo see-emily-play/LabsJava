@@ -7,7 +7,7 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public class LabFour {
-    private static int N;
+    private static int intervalNumber;
     private static double[] results;
 
     public static class Solver {
@@ -15,21 +15,20 @@ public class LabFour {
         CyclicBarrier barrier;
 
         Solver(){
-            int cores = Runtime.getRuntime().availableProcessors();
-            N = 10 * cores; //число интервалов чётно
+            intervalNumber=140; //число интервалов чётно
             int a = 0;
-            int b = 10;
+            int b = 100;
             integralResult=0;
-            double step = (double) (b - a) / (N);
-            results = new double[N + 1];
-            for (int i = 0; i < N + 1; i++)
+            double step = (double) (b - a) / (intervalNumber);
+            results = new double[intervalNumber + 1];
+            for (int i = 0; i < intervalNumber + 1; i++)
                 results[i] = 0;
 
             Runnable merger = new Runnable() {
                 @Override
                 public void run() {
-                    for (int i = 0; i < N + 1; i++) {
-                        if (i == 0 || i == N)
+                    for (int i = 0; i < intervalNumber + 1; i++) {
+                        if (i == 0 || i == intervalNumber)
                             integralResult += results[i];
                         else if (i % 2 == 0)
                             integralResult += 2 * results[i];
@@ -39,12 +38,12 @@ public class LabFour {
                     System.out.println("Интеграл равен " + integralResult);
                 }
             };
-            barrier = new CyclicBarrier(N + 1, merger);
+            barrier = new CyclicBarrier(intervalNumber + 1, merger);
 
-            List<Thread> threads = new ArrayList<>(N);
+            List<Thread> threads = new ArrayList<>(intervalNumber);
             Date begin = new Date();
             double currentInterval = a;
-            for (int i = 0; i < N + 1; i++) {
+            for (int i = 0; i < intervalNumber + 1; i++) {
                 Thread thread = new Thread(new IntegralCalculator(barrier, i, currentInterval));
                 threads.add(thread);
                 thread.start();
@@ -79,7 +78,7 @@ public class LabFour {
             }
 
             double function(double x) {
-                return Math.sin(x);
+                return Math.pow(x, 8)/Math.pow((Math.pow(x, 3)+16), 3);
             }
 
             public void run() {
