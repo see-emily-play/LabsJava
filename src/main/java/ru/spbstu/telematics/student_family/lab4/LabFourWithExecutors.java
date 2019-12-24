@@ -16,21 +16,21 @@ public class LabFourWithExecutors {
 
         static class FunctionCalculator {
             double calculate(double x) {
-                return Math.pow(x, 15) / Math.pow((Math.pow(x, 3) + 16), 5);
+                return Math.pow(x, 15) / Math.pow((Math.pow(x, 3) + 16), 6);
             }
         }
 
         IntegralSolver(){
-            intervalNumber = 10000; //число интервалов чётно
+            intervalNumber = 100000; //число интервалов чётно
             a = 0;
-            b = 100;
+            b = 700;
             step = (double) (b - a) / (intervalNumber);
             currentInterval = a;
         }
 
         double calculateIntegral() throws ExecutionException, InterruptedException {
             ArrayList<Double> results = new ArrayList<>(intervalNumber + 1);
-            ExecutorService threadPool = Executors.newFixedThreadPool(15);
+            ExecutorService threadPool = Executors.newFixedThreadPool(20);
             FunctionCalculator calculator = new FunctionCalculator();
 
             Date begin = new Date();

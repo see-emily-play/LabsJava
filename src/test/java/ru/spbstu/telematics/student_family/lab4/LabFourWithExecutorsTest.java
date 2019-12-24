@@ -13,7 +13,7 @@ public class LabFourWithExecutorsTest {
     @Test
     public void calculationTest() throws ExecutionException, InterruptedException {
         IntegralSolver expected=new IntegralSolver();
-        Assert.assertTrue(Math.abs(expected.calculateIntegral()-94.2987)<0.0001);
+        Assert.assertTrue(Math.abs(expected.calculateIntegral()-0.02377)<0.00001);
 
     }
 
