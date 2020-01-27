@@ -48,11 +48,7 @@ public class LabThree {
                     }
                 }
             }
-
-            synchronized (lockForController) {
-                entranceIsAllowed = true;
-                lockForController.notify();
-            }
+            entranceIsAllowed = true;
             System.out.println("Вход открыт");
 
             synchronized (lockForDirector) {
@@ -64,11 +60,7 @@ public class LabThree {
                     }
                 }
             }
-
-            synchronized (lockForController) {
-                entranceIsAllowed = false;
-                lockForController.notify();
-            }
+            entranceIsAllowed = false;
             System.out.println("Вход закрыт");
         }
     }
@@ -87,14 +79,11 @@ public class LabThree {
 
         @Override
         public void run() {
-            synchronized (lockForController) {
-                if (!entranceIsAllowed) {
-                    try {
-                        lockForController.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+            Random rand = new Random();
+            try {
+                Thread.sleep(rand.nextInt(200));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             if (entranceIsAllowed) {
@@ -109,7 +98,6 @@ public class LabThree {
                 }
 
                 try {
-                    Random rand = new Random();
                     Thread.sleep(rand.nextInt(500));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -140,7 +128,7 @@ public class LabThree {
         dir.start();
         cont.start();
 
-        for(int i=0; i<15; i++)
+        for(int i=0; i<10; i++)
         {
             Visitor visitor = new Visitor(semE, semW, i);
             threads.add(new Thread(visitor));
