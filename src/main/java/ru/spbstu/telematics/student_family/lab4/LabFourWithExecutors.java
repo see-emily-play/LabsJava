@@ -8,14 +8,13 @@ import java.util.concurrent.*;
 public class LabFourWithExecutors {
 
     static class IntegralSolver {
-        double integralResult = 0;
+        Double integralResult = 0.0;
         int intervalNumber;
-        double step;
+        Double step;
         int a, b;
-        double currentInterval;
 
         static class FunctionCalculator {
-            double calculate(double x) {
+            Double calculate(double x) {
                 return Math.pow(x, 15) / Math.pow((Math.pow(x, 3) + 16), 6);
             }
         }
@@ -25,25 +24,36 @@ public class LabFourWithExecutors {
             a = 0;
             b = 700;
             step = (double) (b - a) / (intervalNumber);
-            currentInterval = a;
         }
 
         double calculateIntegral() throws ExecutionException, InterruptedException {
-            ArrayList<Double> results = new ArrayList<>(intervalNumber + 1);
-            ExecutorService threadPool = Executors.newFixedThreadPool(10);
+            ArrayList<Double> results = new ArrayList<>();
+            int numberOfThreads=8;
+            ExecutorService threadPool = Executors.newFixedThreadPool(numberOfThreads);
             FunctionCalculator calculator = new FunctionCalculator();
 
             Date begin = new Date();
-            List<Future<Double>> futures = new ArrayList<>(intervalNumber + 1);
-            for (int i = 0; i < intervalNumber + 1; i++) {
-                final double tmp = currentInterval;
+            List<Future<List<Double>>> futures = new ArrayList<>();
+            for (int i = 0; i < numberOfThreads; i++) {
+                int finalI = i;
                 futures.add(
-                        threadPool.submit(() -> calculator.calculate(tmp))
-                        );
-                currentInterval += step;
+                        threadPool.submit(() -> {
+                            double interval=step*((double)intervalNumber/numberOfThreads)*finalI;
+                            List<Double> tmpResults=new ArrayList<>();
+
+                            for(int j=0; j<intervalNumber/numberOfThreads; j++) {
+                                tmpResults.add(calculator.calculate(interval));
+                                interval += step;
+                            }
+
+                            if(finalI == numberOfThreads-1)
+                                tmpResults.add(calculator.calculate(interval));
+                            return tmpResults;
+                        }));
             }
-            for (Future<Double> future : futures) {
-                results.add(future.get());
+
+            for (Future<List<Double>> future : futures) {
+                results.addAll(future.get());
             }
 
             //Способ с асинхронной записью
@@ -70,7 +80,7 @@ public class LabFourWithExecutors {
             threadPool.shutdown();
             Date end = new Date();
 
-            for (int i = 0; i < intervalNumber + 1; i++) {
+            for (int i = 0; i < intervalNumber+1; i++) {
                 if (i == 0 || i == intervalNumber)
                     integralResult += results.get(i);
                 else if (i % 2 == 0)
