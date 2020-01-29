@@ -56,27 +56,6 @@ public class LabFourWithExecutors {
                 results.addAll(future.get());
             }
 
-            //Способ с асинхронной записью
-            /*List<CompletableFuture<Double>> futures = new ArrayList<>(intervalNumber + 1);
-            for (int i = 0; i < intervalNumber + 1; i++) {
-                final int j=i;
-                final double tmp = currentInterval;
-                futures.add(
-                        CompletableFuture.supplyAsync(
-                                () -> calculator.calculate(tmp),
-                                threadPool
-                        ).thenAccept(
-                                result -> {if (j == 0 || j == intervalNumber)
-                                    integralResult += result;
-                                else if (j % 2 == 0)
-                                     integralResult += 2 * result;
-                                else integralResult += 4 * result;})
-                );
-                currentInterval += step;
-            }
-            CompletableFuture<Void> allFutures=CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));*/
-
-
             threadPool.shutdown();
             Date end = new Date();
 
